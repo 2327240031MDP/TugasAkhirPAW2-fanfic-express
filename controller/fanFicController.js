@@ -21,6 +21,56 @@ export const FanFic = async (req, res) => {
   }
 };
 
+// PUBLIC - Home (tanpa login)
+export const getPublicFanFic = async (req, res) => {
+  try {
+    const fiction = await FanFicModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate("createdby", "username")
+
+    return res.status(200).json({
+      message: "Daftar Cerita Publik",
+      data: fiction
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      data: null
+    })
+  }
+}
+
+// PUBLIC - Detail (tanpa login)
+export const getPublicFanFicDetail = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ data: null })
+    }
+
+    const fiction = await FanFicModel
+      .findById(id)
+      .populate("createdby", "username")
+      .populate("comments.createdby", "username")
+
+    if (!fiction) {
+      return res.status(404).json({ data: null })
+    }
+
+    return res.status(200).json({
+      message: "Detail Cerita",
+      data: fiction
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      data: null
+    })
+  }
+}
+
 export const addNewFanFic = async (req, res) => {
   try {
     const { judul, Cerita, Genre } = req.body;
