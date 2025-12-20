@@ -3,6 +3,7 @@ import * as FanFicController from "../controller/fanFicController.js"
 import * as UserController from "../controller/authController.js"
 import { authenticateTokenMiddleware, optionalAuth } from "../middlewares/authenticateTokenMiddleware.js"
 import * as BookmarkController from "../controller/bookmarkController.js"
+import * as FollowController from "../controller/followController.js"
 
 const api = express.Router()
 
@@ -44,6 +45,25 @@ api.get(
   "/bookmarks",
   authenticateTokenMiddleware,
   BookmarkController.getBookmarks
+)
+
+// Follow
+api.post(
+  "/follow/:id",
+  authenticateTokenMiddleware,
+  FollowController.toggleFollow
+)
+
+api.get(
+  "/following",
+  authenticateTokenMiddleware,
+  FollowController.getFollowing
+)
+
+api.get(
+  "/followers",
+  authenticateTokenMiddleware,
+  FollowController.getFollowers
 )
 
 export default api

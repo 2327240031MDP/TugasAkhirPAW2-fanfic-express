@@ -24,6 +24,18 @@ const UserSchema = new mongoose.Schema(
                 type: mongoose.Types.ObjectId,
                 ref : "fanfic",
             }
+        ],
+        following: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref : "User",
+            }
+        ],
+        followers: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref : "User",
+            }
         ]
     },
     {
