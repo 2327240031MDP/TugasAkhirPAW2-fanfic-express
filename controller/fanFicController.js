@@ -41,35 +41,7 @@ export const getPublicFanFic = async (req, res) => {
   }
 }
 
-// PUBLIC - Detail (tanpa login)
-export const getPublicFanFicDetail = async (req, res) => {
-  try {
-    const { id } = req.params
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ data: null })
-    }
-
-    const fiction = await FanFicModel
-      .findById(id)
-      .populate("createdby", "username")
-      .populate("comments.createdby", "username")
-
-    if (!fiction) {
-      return res.status(404).json({ data: null })
-    }
-
-    return res.status(200).json({
-      message: "Detail Cerita",
-      data: fiction
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      data: null
-    })
-  }
-}
 
 export const addNewFanFic = async (req, res) => {
   try {
@@ -110,6 +82,7 @@ export const detailFanFic = async (req, res) => {
     }
 
     const Fiction = await FanFicModel.findById(id)
+      .populate("createdby", "username")
       .populate("comments.createdby", "username");
 
     if (!Fiction) {
@@ -119,16 +92,20 @@ export const detailFanFic = async (req, res) => {
       });
     }
 
-    // 🔥 Ambil user yang sedang login
-    const user = await UserModel.findById(req.user.user_id);
+    let isBookmarked = false;
 
-    // 🔥 Cek apakah fanfic ini dibookmark
-    const isBookmarked = user.bookmarks.includes(Fiction._id);
+    // 🔥 CEK JIKA USER LOGIN
+    if (req.user?.user_id) {
+      const user = await UserModel.findById(req.user.user_id);
+      isBookmarked = user.bookmarks.some(
+        (b) => b.toString() === Fiction._id.toString()
+      );
+    }
 
     return res.status(200).json({
       message: "Detail Cerita",
       data: Fiction,
-      isBookmarked: isBookmarked
+      isBookmarked
     });
 
   } catch (error) {
@@ -139,6 +116,7 @@ export const detailFanFic = async (req, res) => {
     });
   }
 };
+
 
 
 export const updateFanFic = async (req, res) => {

@@ -1,7 +1,7 @@
 import express from "express"
 import * as FanFicController from "../controller/fanFicController.js"
 import * as UserController from "../controller/authController.js"
-import { authenticateTokenMiddleware } from "../middlewares/authenticateTokenMiddleware.js"
+import { authenticateTokenMiddleware, optionalAuth } from "../middlewares/authenticateTokenMiddleware.js"
 import * as BookmarkController from "../controller/bookmarkController.js"
 
 const api = express.Router()
@@ -14,8 +14,8 @@ api.post("/signup", UserController.signUp)
 // Home (tanpa login)
 api.get("/public/fanfic", FanFicController.getPublicFanFic)
 
-// Detail fanfic (tanpa login, read-only)
-api.get("/public/fanfic/:id", FanFicController.getPublicFanFicDetail)
+// Detail fanfic
+api.get("/fanfic/:id", optionalAuth, FanFicController.detailFanFic)
 
 /* ================= PRIVATE ================= */
 // Fanfic CRUD

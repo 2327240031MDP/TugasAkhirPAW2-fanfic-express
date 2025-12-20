@@ -9,7 +9,6 @@ export const authenticateTokenMiddleware = (req, res, next) => {
     });
   }
 
-  // Format token biasanya "Bearer [TOKEN]", ambil elemen kedua
   const token = authHeader.split(" ")[1];
   
   if (!token) {
@@ -26,8 +25,21 @@ export const authenticateTokenMiddleware = (req, res, next) => {
       });
     }
 
-    // Menyimpan data user yang terdeskripsi ke dalam object request
     req.user = decoded;
     next();
   });
 };
+
+export const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader) return next()
+
+  try {
+    const token = authHeader.split(" ")[1]
+    const decoded = jwt.verify(token, "APP_JWT_SECRET")
+    req.user = decoded
+  } catch (err) {
+  }
+
+  next()
+}
